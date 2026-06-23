@@ -8,7 +8,10 @@ require_once 'kelas/KaryawanMagang.php';
 // Mengambil input cari dan mengamankannya dari SQL Injection
 $cari = isset($_GET['cari']) ? trim($_GET['cari']) : '';
 
-// MEMANGGIL QUERY INTERNAL SPESIFIK SUBCLASS (Meloloskan Variabel Cari)
+// PERBAIKAN OOP MURNI: Memanggil koneksi database lewat metode statis class Database
+$pdo = Database::getConnection();
+
+// Memanggil query internal spesifik ber-WHERE milik masing-masing subclass
 $data_kontrak = KaryawanKontrak::ambilDataPerJabatan($pdo, $cari);
 $data_tetap   = KaryawanTetap::ambilDataPerJabatan($pdo, $cari);
 $data_magang  = KaryawanMagang::ambilDataPerJabatan($pdo, $cari);
@@ -19,12 +22,12 @@ $dashboard = [
     'Magang' => []
 ];
 
-// Instansiasi objek berbasis tipe data hasil bentukan query modular
+// Instansiasi objek langsung dari hasil filter query modular masing-masing anak
 foreach ($data_kontrak as $row) { $dashboard['Kontrak'][] = new KaryawanKontrak($row); }
 foreach ($data_tetap as $row)   { $dashboard['Tetap'][]   = new KaryawanTetap($row); }
 foreach ($data_magang as $row)  { $dashboard['Magang'][]  = new KaryawanMagang($row); }
 
-// Menghitung total data karyawan yang berhasil ditarik/ditemukan
+// Menghitung total data karyawan yang berhasil ditemukan
 $total_karyawan = count($dashboard['Kontrak']) + count($dashboard['Tetap']) + count($dashboard['Magang']);
 ?>
 
@@ -39,7 +42,7 @@ $total_karyawan = count($dashboard['Kontrak']) + count($dashboard['Tetap']) + co
             --hot-pink: #ff1493;
             --soft-pink: #fff0f5;
             --pastel-pink: #ff69b4;
-            --glass-bg: rgba(255, 255, 255, 0.88);
+            --glass-bg: rgba(255, 255, 255, 0.90);
         }
 
         body {
@@ -52,7 +55,7 @@ $total_karyawan = count($dashboard['Kontrak']) + count($dashboard['Tetap']) + co
         }
 
         .wrapper {
-            max-width: 1250px;
+            max-width: 1300px;
             margin: 0 auto;
         }
 
@@ -69,7 +72,7 @@ $total_karyawan = count($dashboard['Kontrak']) + count($dashboard['Tetap']) + co
         header h1 {
             margin: 0;
             color: var(--hot-pink);
-            font-size: 2.6em;
+            font-size: 2.4em;
             letter-spacing: 1px;
         }
 
@@ -149,7 +152,7 @@ $total_karyawan = count($dashboard['Kontrak']) + count($dashboard['Tetap']) + co
 
         .section-title {
             color: var(--hot-pink);
-            font-size: 1.7em;
+            font-size: 1.5em;
             margin-top: 0;
             margin-bottom: 20px;
             text-transform: uppercase;
@@ -170,13 +173,13 @@ $total_karyawan = count($dashboard['Kontrak']) + count($dashboard['Tetap']) + co
             color: white;
             padding: 14px;
             font-size: 0.95em;
-            text-align: left;
         }
 
         td {
             padding: 14px;
             border-bottom: 1px solid #f2f2f2;
             color: #333;
+            font-size: 0.95em;
         }
 
         tr:hover {
@@ -184,7 +187,24 @@ $total_karyawan = count($dashboard['Kontrak']) + count($dashboard['Tetap']) + co
             transition: 0.2s ease;
         }
 
+        /* PERBAIKAN ALIGNMENT STANDAR SLIP GAJI */
+        .text-left {
+            text-align: left;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        /* Mengatur nominal keuangan rata kanan agar sejajar presisi */
+        .text-right {
+            text-align: right;
+            font-family: 'Courier New', Courier, monospace; /* Font monospace opsional agar angka sejajar sempurna */
+            font-weight: 600;
+        }
+
         .badge-info {
+            display: inline-block;
             background: #fff5f8;
             color: #db2777;
             padding: 6px 14px;
@@ -192,6 +212,7 @@ $total_karyawan = count($dashboard['Kontrak']) + count($dashboard['Tetap']) + co
             border: 1px solid var(--pastel-pink);
             font-size: 0.88em;
             font-weight: 500;
+            text-align: left;
         }
 
         .salary-text {
@@ -237,26 +258,26 @@ $total_karyawan = count($dashboard['Kontrak']) + count($dashboard['Tetap']) + co
                 <table>
                     <thead>
                         <tr>
-                            <th>Nama Karyawan</th>
-                            <th>Departemen</th>
-                            <th>Kehadiran (Hari)</th>
-                            <th>Gaji / Hari</th>
-                            <th>Atribut Spesifik Jabatan</th>
-                            <th>Gaji Bersih (Polimorfisme)</th>
+                            <th class="text-left">Nama Karyawan</th>
+                            <th class="text-left">Departemen</th>
+                            <th class="text-center">Kehadiran</th>
+                            <th class="text-right">Gaji Dasar / Hari</th>
+                            <th class="text-left">Atribut Spesifik Kategori</th>
+                            <th class="text-right">Gaji Bersih (Polimorfisme)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (empty($karyawan_list)): ?>
-                            <tr><td colspan="6" style="text-align:center; color: #777;">Tidak ada karyawan kategori ini yang cocok dengan hasil pencarian.</td></tr>
+                            <tr><td colspan="6" style="text-align:center; color: #777; padding: 20px;">Tidak ada data karyawan pada kategori ini.</td></tr>
                         <?php else: ?>
                             <?php foreach ($karyawan_list as $k): ?>
                                 <tr>
-                                    <td><strong><?php echo htmlspecialchars($k->getNama()); ?></strong></td>
-                                    <td><?php echo htmlspecialchars($k->getDepartemen()); ?></td>
-                                    <td><?php echo htmlspecialchars($k->getHariKerja()); ?> Hari</td>
-                                    <td>Rp <?php echo number_format($k->getGajiDasar(), 0, ',', '.'); ?></td>
-                                    <td><span class="badge-info"><?php echo $k->tampilkanProfilKaryawan(); ?></span></td>
-                                    <td class="salary-text">Rp <?php echo number_format($k->hitungGajiBersih(), 0, ',', '.'); ?></td>
+                                    <td class="text-left"><strong><?php echo htmlspecialchars($k->getNama()); ?></strong></td>
+                                    <td class="text-left"><?php echo htmlspecialchars($k->getDepartemen()); ?></td>
+                                    <td class="text-center"><b><?php echo htmlspecialchars($k->getHariKerja()); ?></b> Hari</td>
+                                    <td class="text-right">Rp <?php echo number_format($k->getGajiDasar(), 0, ',', '.'); ?></td>
+                                    <td class="text-left"><span class="badge-info"><?php echo $k->tampilkanProfilKaryawan(); ?></span></td>
+                                    <td class="text-right salary-text">Rp <?php echo number_format($k->hitungGajiBersih(), 0, ',', '.'); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
