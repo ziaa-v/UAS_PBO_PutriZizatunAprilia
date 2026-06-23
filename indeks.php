@@ -49,16 +49,16 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
             --dark-pink: #db2777; /* Accent Pink untuk teks penting */
             --light-pink: #fdf2f8; /* Background Soft Pink Muda */
             --card-pink: #fff5f7;
-            --bg-gray: #f8fafc;
-            --dark-gray: #334155;
-            --border-color: #fce7f3; /* Border Soft Pink */
+            --dashboard-bg: #fff0f5; /* Lavender Blush / Full Soft Pink Background */
+            --dark-gray: #4c0519; /* Teks gelap maroon/pink tua */
+            --border-color: #fbcfe8; /* Border Soft Pink */
         }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: var(--bg-gray);
+            background-color: var(--dashboard-bg);
             color: var(--dark-gray);
         }
 
@@ -74,7 +74,7 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
             color: #4c0519;
             padding: 30px 40px;
             border-radius: 16px;
-            box-shadow: 0 10px 20px rgba(244, 114, 182, 0.1);
+            box-shadow: 0 10px 25px rgba(244, 114, 182, 0.2);
             margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
@@ -131,22 +131,22 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
             padding: 20px;
             border-radius: 14px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
+            box-shadow: 0 4px 10px rgba(244, 114, 182, 0.05);
             border-left: 5px solid var(--primary-pink);
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
-        .summary-card.total { border-left-color: #cbd5e1; }
+        .summary-card.total { border-left-color: #f472b6; background: #fff5f7; }
         .summary-card.kontrak { border-left-color: #fbcfe8; }
-        .summary-card.tetap { border-left-color: #f472b6; }
+        .summary-card.tetap { border-left-color: #db2777; }
         .summary-card.magang { border-left-color: #f9a8d4; }
 
         .summary-label {
             font-size: 12px;
-            color: #64748b;
-            font-weight: 600;
+            color: #831843;
+            font-weight: 700;
             text-transform: uppercase;
         }
 
@@ -154,7 +154,7 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
             font-size: 28px;
             font-weight: 700;
             margin: 4px 0 0 0;
-            color: #475569;
+            color: #4c0519;
         }
 
         /* Card Wadah Diagram Batang */
@@ -163,7 +163,7 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
             padding: 20px 25px;
             border-radius: 14px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
+            box-shadow: 0 4px 10px rgba(244, 114, 182, 0.05);
             display: flex;
             flex-direction: column;
             max-height: 240px;
@@ -172,7 +172,7 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
         .chart-title {
             font-size: 13px;
             font-weight: 700;
-            color: #64748b;
+            color: #831843;
             text-transform: uppercase;
             margin-bottom: 10px;
         }
@@ -190,47 +190,53 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
         .tab-group {
             display: flex;
             gap: 6px;
-            background: #f1f5f9;
+            background: #fce7f3; /* Soft Pink Base Container */
             padding: 6px;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
         }
 
         .tab-btn {
             padding: 10px 18px;
             border-radius: 8px;
             text-decoration: none;
-            color: #475569;
+            color: #831843;
             font-weight: 600;
             font-size: 14px;
             transition: all 0.2s;
         }
 
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
         .tab-btn.active {
             background: white;
             color: var(--dark-pink);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 4px 8px rgba(244, 114, 182, 0.15);
             border: 1px solid rgba(244, 114, 182, 0.3);
         }
 
         .search-box {
             display: flex;
             gap: 10px;
+            align-items: center;
         }
 
         .search-input {
             padding: 12px 16px;
             border: 1px solid var(--border-color);
             border-radius: 10px;
-            width: 280px;
+            width: 250px;
             outline: none;
             font-size: 14px;
             background-color: white;
+            color: var(--dark-gray);
         }
 
         .search-input:focus {
             border-color: var(--primary-pink);
-            box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.2);
+            box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.3);
         }
 
         .btn {
@@ -241,16 +247,35 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
             font-size: 14px;
             cursor: pointer;
             transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-primary {
             background: var(--primary-pink);
             color: white;
+            box-shadow: 0 4px 10px rgba(244, 114, 182, 0.2);
         }
 
-        .btn-primary:hover { background: #ec4899; }
+        .btn-primary:hover { 
+            background: #ec4899; 
+            transform: translateY(-1px);
+        }
 
-        /* Grid List Karyawan Bergaya Card - SEKARANG FULL BISA DIKLIK */
+        .btn-secondary {
+            background: #fbcfe8; /* Pink Pastel untuk tombol reset */
+            color: #831843;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover { 
+            background: #f9a8d4; 
+            transform: translateY(-1px);
+        }
+
+        /* Grid List Karyawan Bergaya Card */
         .employee-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
@@ -262,15 +287,15 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
             border: 1px solid var(--border-color);
             border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
+            box-shadow: 0 4px 8px rgba(244, 114, 182, 0.03);
             transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer; /* Mengubah kursor jadi tangan di seluruh area kartu */
-            user-select: none; /* Mencegah teks ter-highlight berantakan pas diklik berkali-kali */
+            cursor: pointer;
+            user-select: none;
         }
 
         .employee-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 20px -3px rgba(244, 114, 182, 0.15);
+            box-shadow: 0 12px 24px rgba(244, 114, 182, 0.2);
             border-color: var(--primary-pink);
         }
 
@@ -296,7 +321,7 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
 
         .emp-dept {
             font-size: 13px;
-            color: #64748b;
+            color: #831843;
             margin: 4px 0 0 0;
             font-weight: 500;
         }
@@ -315,6 +340,7 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
 
         .card-body {
             padding: 20px;
+            background: white;
         }
 
         .info-row {
@@ -324,8 +350,8 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
             font-size: 14px;
         }
 
-        .info-label { color: #64748b; }
-        .info-value { font-weight: 600; text-align: right; }
+        .info-label { color: #831843; opacity: 0.8; }
+        .info-value { font-weight: 600; text-align: right; color: var(--dark-gray); }
 
         .card-footer-salary {
             background: var(--light-pink);
@@ -358,7 +384,7 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(253, 242, 248, 0.6);
+            background-color: rgba(76, 5, 25, 0.2);
             backdrop-filter: blur(4px);
             align-items: center;
             justify-content: center;
@@ -370,7 +396,7 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
             border-radius: 16px;
             width: 100%;
             max-width: 550px;
-            box-shadow: 0 25px 50px -12px rgba(244, 114, 182, 0.15);
+            box-shadow: 0 25px 50px rgba(76, 5, 25, 0.15);
             border-top: 8px solid var(--primary-pink);
             position: relative;
         }
@@ -381,11 +407,11 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
             right: 25px;
             font-size: 28px;
             font-weight: bold;
-            color: #cbd5e1;
+            color: #f9a8d4;
             cursor: pointer;
         }
 
-        .close-modal:hover { color: #64748b; }
+        .close-modal:hover { color: var(--dark-pink); }
 
         .slip-header {
             text-align: center;
@@ -461,7 +487,7 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
     <!-- Filter Tab & Pencarian -->
     <div class="controls-row">
         <div class="tab-group">
-            <a href="?filter=Semua&cari=<?php echo urlencode($cari); ?>" class="tab-btn <?php echo $filter === 'Semua' ? 'active' : ''; ?>">📂 Semua</a>
+            <a href="?filter=Semua" class="tab-btn <?php echo $filter === 'Semua' ? 'active' : ''; ?>">📂 Semua</a>
             <a href="?filter=Kontrak&cari=<?php echo urlencode($cari); ?>" class="tab-btn <?php echo $filter === 'Kontrak' ? 'active' : ''; ?>">⏳ Kontrak</a>
             <a href="?filter=Tetap&cari=<?php echo urlencode($cari); ?>" class="tab-btn <?php echo $filter === 'Tetap' ? 'active' : ''; ?>">🏥 Tetap</a>
             <a href="?filter=Magang&cari=<?php echo urlencode($cari); ?>" class="tab-btn <?php echo $filter === 'Magang' ? 'active' : ''; ?>">🎓 Magang</a>
@@ -469,12 +495,15 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
 
         <form action="" method="GET" class="search-box">
             <input type="hidden" name="filter" value="<?php echo htmlspecialchars($filter); ?>">
-            <input type="text" name="cari" class="search-input" placeholder="Cari nama karyawan perusahaan..." value="<?php echo htmlspecialchars($cari); ?>">
+            <input type="text" name="cari" class="search-input" placeholder="Cari nama karyawan..." value="<?php echo htmlspecialchars($cari); ?>">
             <button type="submit" class="btn btn-primary">Cari Karyawan</button>
+            
+            <!-- FIXED DENGAN PATHNAME: Mengambil URL path dinamis folder Laragon secara aman -->
+            <button type="button" class="btn btn-secondary" onclick="window.location.href=window.location.pathname">🏠 Dashboard Utama</button>
         </form>
     </div>
 
-    <!-- Tampilan Card Karyawan dengan Aksi Klik di Seluruh Area Kolom -->
+    <!-- Tampilan Card Karyawan -->
     <div class="employee-grid">
         <?php
         $no_data = true;
@@ -495,7 +524,6 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
                     'gaji_bersih' => "Rp " . number_format($k->hitungGajiBersih(), 0, ',', '.')
                 ]);
                 ?>
-                <!-- Event onclick sekarang dipasang langsung pada pembungkus utama kartu (.employee-card) -->
                 <div class="employee-card" onclick='bukaSlipGaji(<?php echo htmlspecialchars($json_data, ENT_QUOTES, 'UTF-8'); ?>)'>
                     <div class="card-top">
                         <div>
@@ -514,7 +542,7 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
                             <span class="info-value">Rp <?php echo number_format($k->getGajiDasar(), 0, ',', '.'); ?></span>
                         </div>
                         <div class="info-row" style="margin-top: 15px;">
-                            <span class="info-value" style="color: #64748b; font-size: 13px; text-align: left; font-weight: normal;">
+                            <span class="info-value" style="color: #831843; opacity: 0.8; font-size: 13px; text-align: left; font-weight: normal;">
                                 <?php echo $k->tampilkanProfilKaryawan(); ?>
                             </span>
                         </div>
@@ -530,7 +558,8 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
 
         if ($no_data) {
             echo "<div style='grid-column: 1/-1; text-align: center; padding: 50px; background: white; border-radius: 12px; border: 1px dashed var(--border-color);'>
-                    <h3 style='color: #64748b; margin: 0;'>Data entri karyawan tidak ditemukan atau kosong.</h3>
+                    <h3 style='color: #831843; margin: 0;'>Data entri karyawan tidak ditemukan atau kosong.</h3>
+                    <p><a href='#' onclick='window.location.href=window.location.pathname' style='color: var(--dark-pink); font-weight: bold; text-decoration: none;'>Reset Pencarian</a></p>
                   </div>";
         }
         ?>
@@ -543,7 +572,7 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
         <span class="close-modal" onclick="tutupSlipGaji()">&times;</span>
         <div class="slip-header">
             <div class="slip-title">SLIP GAJI RESMI PERUSAHAAN</div>
-            <div style="font-size: 12px; color: #64748b; margin-top: 5px; font-weight: bold; letter-spacing: 0.5px;">PT. PUTRI ZIZATUN APRILIA</div>
+            <div style="font-size: 12px; color: #831843; margin-top: 5px; font-weight: bold; letter-spacing: 0.5px;">PT. PUTRI ZIZATUN APRILIA</div>
         </div>
         
         <div class="slip-grid">
@@ -557,7 +586,7 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
             <div class="slip-section-title">Rincian Perhitungan</div>
             <div class="info-row"><span class="info-label">Jumlah Kehadiran Kerja</span><span id="modalHadir" class="info-value"></span></div>
             <div class="info-row"><span class="info-label">Tarif Gaji Dasar Pokok</span><span id="modalGajiDasar" class="info-value"></span></div>
-            <div class="info-row"><span class="info-label">Komponen Tambahan</span><span id="modalFasilitas" class="info-value" style="font-size:12px; color:#475569;"></span></div>
+            <div class="info-row"><span class="info-label">Komponen Tambahan</span><span id="modalFasilitas" class="info-value" style="font-size:12px; color:#4c0519;"></span></div>
         </div>
 
         <div class="slip-grid" style="margin-top: 30px; background: var(--light-pink); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color);">
@@ -567,7 +596,7 @@ $total_karyawan = $count_kontrak + $count_tetap + $count_magang;
             </div>
         </div>
         
-        <div style="text-align: center; font-size: 11px; color: #94a3b8; margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+        <div style="text-align: center; font-size: 11px; color: #db2777; margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px; opacity: 0.7;">
             Sistem Keuangan Sah — Diunduh otomatis melalui aplikasi PBO.
         </div>
     </div>
@@ -584,9 +613,9 @@ new Chart(ctx, {
             label: ' Jumlah Karyawan',
             data: [<?php echo $count_kontrak; ?>, <?php echo $count_tetap; ?>, <?php echo $count_magang; ?>],
             backgroundColor: [
-                'rgba(251, 207, 232, 0.7)',
-                'rgba(244, 114, 182, 0.7)',
-                'rgba(249, 168, 212, 0.7)'
+                'rgba(251, 207, 232, 0.8)',
+                'rgba(244, 114, 182, 0.8)',
+                'rgba(249, 168, 212, 0.8)'
             ],
             borderColor: [
                 '#fbcfe8',
@@ -606,11 +635,11 @@ new Chart(ctx, {
         scales: {
             y: {
                 beginAtZero: true,
-                ticks: { stepSize: 1, color: '#64748b' },
-                grid: { color: '#f1f5f9' }
+                ticks: { stepSize: 1, color: '#831843' },
+                grid: { color: '#fce7f3' }
             },
             x: {
-                ticks: { color: '#64748b', font: { weight: '600' } },
+                ticks: { color: '#831843', font: { weight: '600' } },
                 grid: { display: false }
             }
         }
@@ -630,6 +659,7 @@ function bukaSlipGaji(data) {
     document.getElementById('slipModal').style.display = 'flex';
 }
 
+// Menutup Modal
 function tutupSlipGaji() {
     document.getElementById('slipModal').style.display = 'none';
 }
