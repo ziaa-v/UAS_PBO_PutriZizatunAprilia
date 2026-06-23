@@ -1,4 +1,5 @@
 <?php
+// index.php
 require_once 'koneksi.php';
 require_once 'kelas/KaryawanKontrak.php';
 require_once 'kelas/KaryawanTetap.php';
@@ -7,16 +8,10 @@ require_once 'kelas/KaryawanMagang.php';
 // Mengambil input cari dan mengamankannya dari SQL Injection
 $cari = isset($_GET['cari']) ? trim($_GET['cari']) : '';
 
-if ($cari != '') {
-    // Jalankan query dengan filter pencarian nama jika parameter 'cari' terisi
-    $stmt = $pdo->prepare("SELECT * FROM tabel_karyawan WHERE nama_karyawan LIKE :cari");
-    $stmt->execute(['cari' => '%' . $cari . '%']);
-    $semua_karyawan = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} else {
-    // Jalankan query normal tanpa filter jika tidak sedang mencari
-    $query = $pdo->query("SELECT * FROM tabel_karyawan");
-    $semua_karyawan = $query->fetchAll(PDO::FETCH_ASSOC);
-}
+// MEMANGGIL QUERY INTERNAL SPESIFIK SUBCLASS (Meloloskan Variabel Cari)
+$data_kontrak = KaryawanKontrak::ambilDataPerJabatan($pdo, $cari);
+$data_tetap   = KaryawanTetap::ambilDataPerJabatan($pdo, $cari);
+$data_magang  = KaryawanMagang::ambilDataPerJabatan($pdo, $cari);
 
 $dashboard = [
     'Kontrak' => [],
@@ -24,16 +19,10 @@ $dashboard = [
     'Magang' => []
 ];
 
-// Instansiasi objek berbasis tipe data (Polimorfisme)
-foreach ($semua_karyawan as $row) {
-    if ($row['jenis_karyawan'] == 'Kontrak') {
-        $dashboard['Kontrak'][] = new KaryawanKontrak($row);
-    } elseif ($row['jenis_karyawan'] == 'Tetap') {
-        $dashboard['Tetap'][] = new KaryawanTetap($row);
-    } elseif ($row['jenis_karyawan'] == 'Magang') {
-        $dashboard['Magang'][] = new KaryawanMagang($row);
-    }
-}
+// Instansiasi objek berbasis tipe data hasil bentukan query modular
+foreach ($data_kontrak as $row) { $dashboard['Kontrak'][] = new KaryawanKontrak($row); }
+foreach ($data_tetap as $row)   { $dashboard['Tetap'][]   = new KaryawanTetap($row); }
+foreach ($data_magang as $row)  { $dashboard['Magang'][]  = new KaryawanMagang($row); }
 
 // Menghitung total data karyawan yang berhasil ditarik/ditemukan
 $total_karyawan = count($dashboard['Kontrak']) + count($dashboard['Tetap']) + count($dashboard['Magang']);
@@ -57,7 +46,6 @@ $total_karyawan = count($dashboard['Kontrak']) + count($dashboard['Tetap']) + co
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 25px;
-            /* Gambar Background Kantor Estetik Bernuansa Magenta/Pink Soft */
             background: linear-gradient(rgba(255, 240, 245, 0.45), rgba(255, 105, 180, 0.35)), 
                         url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1920') no-repeat center center fixed;
             background-size: cover;
@@ -91,7 +79,6 @@ $total_karyawan = count($dashboard['Kontrak']) + count($dashboard['Tetap']) + co
             font-weight: 500;
         }
 
-        /* FORM PENCARIAN STYLING */
         .search-container {
             display: flex;
             justify-content: center;
@@ -230,7 +217,7 @@ $total_karyawan = count($dashboard['Kontrak']) + count($dashboard['Tetap']) + co
             >
             <button type="submit" class="btn-search">Cari</button>
             <?php if ($cari != ''): ?>
-                <a href="?" class="btn-reset">🍿 Kembali ke Dashboard</a>
+                <a href="?" class="btn-reset">🔄 Reset Dashboard</a>
             <?php endif; ?>
         </form>
     </header>
@@ -260,7 +247,7 @@ $total_karyawan = count($dashboard['Kontrak']) + count($dashboard['Tetap']) + co
                     </thead>
                     <tbody>
                         <?php if (empty($karyawan_list)): ?>
-                            <tr><td colspan="6" style="text-align:center; color: #777;">Belum ada data pada kategori ini.</td></tr>
+                            <tr><td colspan="6" style="text-align:center; color: #777;">Tidak ada karyawan kategori ini yang cocok dengan hasil pencarian.</td></tr>
                         <?php else: ?>
                             <?php foreach ($karyawan_list as $k): ?>
                                 <tr>

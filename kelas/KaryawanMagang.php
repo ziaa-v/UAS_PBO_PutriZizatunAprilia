@@ -1,4 +1,5 @@
 <?php
+// kelas/KaryawanMagang.php
 require_once 'Karyawan.php';
 
 class KaryawanMagang extends Karyawan {
@@ -7,11 +8,22 @@ class KaryawanMagang extends Karyawan {
 
     public function __construct($data) {
         parent::__construct($data);
-        $this->uangSakuBulanan = $data['uang_saku_bulanan'];
-        $this->sertifikatKampusMerdeka = $data['sertifikat_kampus_merdeka'];
+        $this->uangSakuBulanan = $data['uang_saku_bulanan'] ?? 0;
+        $this->sertifikatKampusMerdeka = $data['sertifikat_kampus_merdeka'] ?? '-';
     }
 
-    // Rumus: (hari_kerja_masuk * gaji_dasar_per_hari) * 0.80
+    // Query internal spesifik ber-WHERE + Mendukung parameter Pencarian
+    public static function ambilDataPerJabatan($pdo, $cari = '') {
+        if ($cari != '') {
+            $stmt = $pdo->prepare("SELECT * FROM tabel_karyawan WHERE jenis_karyawan = 'Magang' AND nama_karyawan LIKE :cari");
+            $stmt->execute(['cari' => '%' . $cari . '%']);
+        } else {
+            $stmt = $pdo->prepare("SELECT * FROM tabel_karyawan WHERE jenis_karyawan = 'Magang'");
+            $stmt->execute();
+        }
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function hitungGajiBersih() {
         return ($this->hari_kerja_masuk * $this->gaji_dasar_per_hari) * 0.80;
     }

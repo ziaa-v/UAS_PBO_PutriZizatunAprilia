@@ -1,6 +1,5 @@
 <?php
 abstract class Karyawan {
-    // Properti wajib protected terenkapsulasi
     protected $id_karyawan;
     protected $nama_karyawan;
     protected $departemen;
@@ -20,7 +19,6 @@ abstract class Karyawan {
     public function getHariKerja() { return $this->hari_kerja_masuk; }
     public function getGajiDasar() { return $this->gaji_dasar_per_hari; }
 
-    // Abstract method wajib tanpa body
     abstract public function hitungGajiBersih();
     abstract public function tampilkanProfilKaryawan();
 }

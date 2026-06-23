@@ -1,4 +1,5 @@
 <?php
+// kelas/KaryawanTetap.php
 require_once 'Karyawan.php';
 
 class KaryawanTetap extends Karyawan {
@@ -7,11 +8,22 @@ class KaryawanTetap extends Karyawan {
 
     public function __construct($data) {
         parent::__construct($data);
-        $this->tunjanganKesehatan = $data['tunjangan_kesehatan'];
-        $this->opsiSahamId = $data['opsi_saham_id'];
+        $this->tunjanganKesehatan = $data['tunjangan_kesehatan'] ?? 0;
+        $this->opsiSahamId = $data['opsi_saham_id'] ?? '-';
     }
 
-    // Rumus: (hari_kerja_masuk * gaji_dasar_per_hari) + tunjangan_kesehatan
+    // Query internal spesifik ber-WHERE + Mendukung parameter Pencarian
+    public static function ambilDataPerJabatan($pdo, $cari = '') {
+        if ($cari != '') {
+            $stmt = $pdo->prepare("SELECT * FROM tabel_karyawan WHERE jenis_karyawan = 'Tetap' AND nama_karyawan LIKE :cari");
+            $stmt->execute(['cari' => '%' . $cari . '%']);
+        } else {
+            $stmt = $pdo->prepare("SELECT * FROM tabel_karyawan WHERE jenis_karyawan = 'Tetap'");
+            $stmt->execute();
+        }
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function hitungGajiBersih() {
         return ($this->hari_kerja_masuk * $this->gaji_dasar_per_hari) + $this->tunjanganKesehatan;
     }
