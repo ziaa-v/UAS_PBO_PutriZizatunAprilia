@@ -4,9 +4,19 @@ require_once 'kelas/KaryawanKontrak.php';
 require_once 'kelas/KaryawanTetap.php';
 require_once 'kelas/KaryawanMagang.php';
 
-// Fetch data kolektif
-$query = $pdo->query("SELECT * FROM tabel_karyawan");
-$semua_karyawan = $query->fetchAll(PDO::FETCH_ASSOC);
+// Mengambil input cari dan mengamankannya dari SQL Injection
+$cari = isset($_GET['cari']) ? trim($_GET['cari']) : '';
+
+if ($cari != '') {
+    // Jalankan query dengan filter pencarian nama jika parameter 'cari' terisi
+    $stmt = $pdo->prepare("SELECT * FROM tabel_karyawan WHERE nama_karyawan LIKE :cari");
+    $stmt->execute(['cari' => '%' . $cari . '%']);
+    $semua_karyawan = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} else {
+    // Jalankan query normal tanpa filter jika tidak sedang mencari
+    $query = $pdo->query("SELECT * FROM tabel_karyawan");
+    $semua_karyawan = $query->fetchAll(PDO::FETCH_ASSOC);
+}
 
 $dashboard = [
     'Kontrak' => [],
@@ -24,6 +34,9 @@ foreach ($semua_karyawan as $row) {
         $dashboard['Magang'][] = new KaryawanMagang($row);
     }
 }
+
+// Menghitung total data karyawan yang berhasil ditarik/ditemukan
+$total_karyawan = count($dashboard['Kontrak']) + count($dashboard['Tetap']) + count($dashboard['Magang']);
 ?>
 
 <!DOCTYPE html>
@@ -76,6 +89,65 @@ foreach ($semua_karyawan as $row) {
             margin: 7px 0 0;
             color: #555;
             font-weight: 500;
+        }
+
+        /* FORM PENCARIAN STYLING */
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            width: 300px;
+            padding: 12px 18px;
+            border: 2px solid #ffccd5;
+            border-radius: 12px;
+            outline: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--hot-pink);
+            box-shadow: 0 0 8px rgba(255, 20, 147, 0.2);
+        }
+
+        .btn-search {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--pastel-pink), var(--hot-pink));
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #ffffff;
+            color: var(--hot-pink);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 14px;
+            border: 2px solid var(--pastel-pink);
+            transition: all 0.2s;
+        }
+
+        .btn-reset:hover {
+            background: var(--soft-pink);
+            transform: translateY(-2px);
         }
 
         .card-section {
@@ -145,43 +217,66 @@ foreach ($semua_karyawan as $row) {
 
 <div class="wrapper">
     <header>
-        <h1>🌸 PINK OFFICE PAYROLL DASHBOARD 🌸</h1>
-        <p>Sistem Informasi Manajemen Slip Gaji TRPL 1B — Putri Zizatun Aprilia</p>
+        <h1>🌸 ZIA OFFICE PAYROLL DASHBOARD 🌸</h1>
+        <p>Sistem Informasi Manajemen Slip Gaji </p>
+
+        <form action="" method="GET" class="search-container">
+            <input 
+                type="text" 
+                name="cari" 
+                class="search-input" 
+                placeholder="🔍 Cari nama karyawan..." 
+                value="<?php echo htmlspecialchars($cari); ?>"
+            >
+            <button type="submit" class="btn-search">Cari</button>
+            <?php if ($cari != ''): ?>
+                <a href="?" class="btn-reset">🍿 Kembali ke Dashboard</a>
+            <?php endif; ?>
+        </form>
     </header>
 
-    <?php foreach ($dashboard as $status => $karyawan_list): ?>
-        <div class="card-section">
-            <h2 class="section-title">💼 KARYAWAN STATUS: <?php echo $status; ?></h2>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nama Karyawan</th>
-                        <th>Departemen</th>
-                        <th>Kehadiran (Hari)</th>
-                        <th>Gaji / Hari</th>
-                        <th>Atribut Spesifik Jabatan</th>
-                        <th>Gaji Bersih (Polimorfisme)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($karyawan_list)): ?>
-                        <tr><td colspan="6" style="text-align:center; color: #777;">Belum ada data pada kategori ini.</td></tr>
-                    <?php else: ?>
-                        <?php foreach ($karyawan_list as $k): ?>
-                            <tr>
-                                <td><strong><?php echo htmlspecialchars($k->getNama()); ?></strong></td>
-                                <td><?php echo htmlspecialchars($k->getDepartemen()); ?></td>
-                                <td><?php echo htmlspecialchars($k->getHariKerja()); ?> Hari</td>
-                                <td>Rp <?php echo number_format($k->getGajiDasar(), 0, ',', '.'); ?></td>
-                                <td><span class="badge-info"><?php echo $k->tampilkanProfilKaryawan(); ?></span></td>
-                                <td class="salary-text">Rp <?php echo number_format($k->hitungGajiBersih(), 0, ',', '.'); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+    <?php if ($total_karyawan == 0 && $cari != ''): ?>
+        <div class="card-section" style="text-align: center; padding: 40px 20px;">
+            <h2 style="color: var(--hot-pink); margin: 0 0 10px 0;">😢 Karyawan Tidak Ditemukan</h2>
+            <p style="color: #666; margin: 0;">Tidak ada nama karyawan yang cocok dengan kata kunci "<b><?php echo htmlspecialchars($cari); ?></b>".</p>
         </div>
+    <?php endif; ?>
+
+    <?php foreach ($dashboard as $status => $karyawan_list): ?>
+        <?php if (!empty($karyawan_list) || $cari == ''): ?>
+            <div class="card-section">
+                <h2 class="section-title">💼 KARYAWAN STATUS: <?php echo $status; ?></h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama Karyawan</th>
+                            <th>Departemen</th>
+                            <th>Kehadiran (Hari)</th>
+                            <th>Gaji / Hari</th>
+                            <th>Atribut Spesifik Jabatan</th>
+                            <th>Gaji Bersih (Polimorfisme)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($karyawan_list)): ?>
+                            <tr><td colspan="6" style="text-align:center; color: #777;">Belum ada data pada kategori ini.</td></tr>
+                        <?php else: ?>
+                            <?php foreach ($karyawan_list as $k): ?>
+                                <tr>
+                                    <td><strong><?php echo htmlspecialchars($k->getNama()); ?></strong></td>
+                                    <td><?php echo htmlspecialchars($k->getDepartemen()); ?></td>
+                                    <td><?php echo htmlspecialchars($k->getHariKerja()); ?> Hari</td>
+                                    <td>Rp <?php echo number_format($k->getGajiDasar(), 0, ',', '.'); ?></td>
+                                    <td><span class="badge-info"><?php echo $k->tampilkanProfilKaryawan(); ?></span></td>
+                                    <td class="salary-text">Rp <?php echo number_format($k->hitungGajiBersih(), 0, ',', '.'); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
     <?php endforeach; ?>
 </div>
 
